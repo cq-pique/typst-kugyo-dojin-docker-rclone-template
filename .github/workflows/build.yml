@@ -1,0 +1,47 @@
+name: Build Typst PDF and Upload to OneDrive
+
+on:
+  push:
+    branches:
+      - main  # トリガーしたいブランチ名
+    paths:
+      - '**/*.typ' # .typファイルの変更時のみ実行（無駄な実行を防ぐ）
+      - '.github/workflows/**'
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. コードのチェックアウト
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Dockerイメージのビルド
+      - name: Build Docker image
+        run: docker build -t my-typst-container .
+
+      # 3. コンテナを使ってTypstをビルド
+      # ホストの現在のディレクトリ($PWD)をコンテナの/workspaceにマウントして実行
+      - name: Compile PDF using Container
+        run: |
+          mkdir -p output
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspace \
+            my-typst-container \
+            compile main.typ output/book.pdf
+
+      # 4. Rcloneのセットアップ
+      # SecretにRCLONE_CONFIGにrcloneのconfigを行うこと
+      - name: Setup Rclone
+        uses: AnimMouse/setup-rclone@v1
+        with:
+          rclone_config: ${{ secrets.RCLONE_CONFIG }}
+          disable_base64: true
+
+      # 5. OneDriveへアップロード
+      # onedrive は rclone config で設定したときのリモート名に合わせてください
+      # "TargetFolder" はOneDrive上の格納したいフォルダ名に変更してください
+      - name: Upload to OneDrive
+        run: |
+          rclone copy output/book.pdf onedrive:TargetFolder/ --progress

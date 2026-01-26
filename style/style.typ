@@ -1,6 +1,6 @@
 #let init(body) = {
   set page(paper: "a5", margin: (top: 20mm, bottom: 25mm, inside: 20mm, outside: 18mm))
-  set text(lang: "ja", font: ("Noto Sans CJK JP", "IPAexGothic", "Yu Gothic", "Hiragino Sans"), size: 10pt)
+  set text(lang: "ja", font: ("Noto Sans CJK JP", "IPAexGothic"), size: 10pt)
   set par(leading: 0.8em, first-line-indent: 1em)
 
   body
