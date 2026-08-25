@@ -5,7 +5,7 @@ on:
     branches:
       - main  # トリガーしたいブランチ名
     paths:
-      - '**/*.typ' # .typファイルの変更時のみ実行（無駄な実行を防ぐ）
+      - '**/*.typ' # .typファイルの変更時のみ実行
       - '.github/workflows/**'
 
 jobs:
@@ -13,16 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # 1. コードのチェックアウト
+      # 1. コードのチェックアウト (安定版 v4 を指定)
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       # 2. Dockerイメージのビルド
       - name: Build Docker image
         run: docker build -t my-typst-container .
 
       # 3. コンテナを使ってTypstをビルド
-      # ホストの現在のディレクトリ($PWD)をコンテナの/workspaceにマウントして実行
       - name: Compile PDF using Container
         run: |
           mkdir -p output
@@ -32,7 +31,6 @@ jobs:
             compile main.typ output/book.pdf
 
       # 4. Rcloneのセットアップ
-      # SecretにRCLONE_CONFIGにrcloneのconfigを行うこと
       - name: Setup Rclone
         uses: AnimMouse/setup-rclone@v1
         with:

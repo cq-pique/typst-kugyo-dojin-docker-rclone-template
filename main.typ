@@ -26,6 +26,9 @@
 //空白ページ
 #pagebreak()
 
+//字下げの設定
+#set par(first-line-indent: (amount: 1em, all: true))
+
 //まえがきページ
 #set heading(numbering: none)
 #include "preface.typ"
